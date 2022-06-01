@@ -16,7 +16,7 @@ if SERVER then
 
         watchers[scp] = watchers[scp] or {}
 
-        watchers[scp][watcher] = true
+        table.insert(watchers[scp], watcher)
     end)
 
     net.Receive("D_SCP173_RemoveWatcher", function(len, watcher)
@@ -26,7 +26,7 @@ if SERVER then
 
         watchers[scp] = watchers[scp] or {}
 
-        watchers[scp][watcher] = nil
+        table.RemoveByValue(watchers[scp], watcher)
     end)
 
     scp.ID = "SCP_173"
@@ -36,7 +36,7 @@ if SERVER then
 
     scp.Hooks = {
         ["OnTick"] = function(scp)
-            for ply,v in pairs(watchers[scp]) do
+            for _, ply in ipairs(watchers[scp]) do
                 if ply:CanSee(scp) then
                     scp:SetColor(Color(255, 0, 0))
                     return 
@@ -74,6 +74,8 @@ if CLIENT then
         timer.Create("D_SCP173_Watching_"  .. scp:SteamID(), 15, 1, function()
             if !IsValid(v) || !IsValid(LocalPlayer()) then return end
 
+            canBlink = false
+
             net.Start("D_SCP173_RemoveWatcher")
             net.WriteEntity(scp)
             net.SendToServer()
@@ -85,20 +87,9 @@ if CLIENT then
     timer.Create("D_SCP173_CanBlinkCheck", 0.1, 0, function()
         if not IsValid(LocalPlayer()) then return end
 
-        local SCPList = {}
-
-        for k,v in pairs(ents.GetAll()) do
-            if v:IsPlayer() and v:GetSCP() == "SCP_173" then
-                table.insert(SCPList, v)
-            end
-        end
+        local SCPList = GetSCPs("SCP_173")
 
         for k,v in ipairs(SCPList) do
-            if !IsValid(v) then 
-                table.remove(SCPList, k)
-                continue
-            end
-
             if(LocalPlayer():CanSee(v)) || v:GetPos():DistToSqr(LocalPlayer():GetPos()) < BlinkRange*BlinkRange then
                 AddWatcher(LocalPlayer(), v)
             end

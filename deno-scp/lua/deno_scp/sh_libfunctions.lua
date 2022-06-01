@@ -35,3 +35,18 @@ function plyMeta:CanSee(ent)
 
     return false
 end
+
+--- Gives you a list of all the players currently using an SCP
+-- @param SCPID The type of SCP
+-- @return List<Player> The players
+function GetSCPs(scp)
+    local SCPList = {}
+
+    for _, ply in ipairs(player.GetAll()) do
+        if IsValid(ply) and ply:GetSCP() == scp then
+            table.insert(SCPList, ply)
+        end 
+    end
+
+    return SCPList
+end
