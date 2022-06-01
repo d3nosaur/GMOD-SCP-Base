@@ -1,13 +1,39 @@
-// The range around the SCP where players will start to blink
-local BlinkRange = 1024
+// Delay between manual blinks
+local ManualBlinkDelay = 2
+// Delay between forced blinks
+local ForcedBlinkDelay = 7.5
+// Key to blink manually
+local ManualBlinkKey = KEY_RSHIFT
+// Whether or not to allow manual blinking
+local ManualBlinking = true
 
 if SERVER then
     util.AddNetworkString("D_SCP173_AddWatcher")
+    util.AddNetworkString("D_SCP173_RemoveWatcher")
+    util.AddNetworkString("D_SCP173_ManualBlink")
 
     D_SCPBase = D_SCPBase or {}
 
     local scp = {}
     local watchers = {}
+    local blinkers = {}
+
+    local function CreateBlinkTimer(ply)     
+        if(timer.Exists("D_SCP173_BlinkTimer_" .. ply:SteamID())) then
+            timer.Adjust("D_SCP173_BlinkTimer_" .. ply:SteamID(), ForcedBlinkDelay, 0, nil)
+            return
+        end
+
+        timer.Create("D_SCP173_BlinkTimer_" .. ply:SteamID(), ForcedBlinkDelay, 0, function()
+            if not IsValid(ply) or !istable(blinkers[ply]) then 
+                timer.Remove("D_SCP173_BlinkTimer_" .. ply:SteamID())
+                return 
+            end
+
+            blinkers[ply]["LastBlink"] = CurTime()
+            blinkers[ply]["Blinking"] = true
+        end)
+    end
 
     net.Receive("D_SCP173_AddWatcher", function(len, watcher)
         local scp = net.ReadEntity()
@@ -17,6 +43,8 @@ if SERVER then
         watchers[scp] = watchers[scp] or {}
 
         table.insert(watchers[scp], watcher)
+
+        CreateBlinkTimer(ply)
     end)
 
     net.Receive("D_SCP173_RemoveWatcher", function(len, watcher)
@@ -27,6 +55,26 @@ if SERVER then
         watchers[scp] = watchers[scp] or {}
 
         table.RemoveByValue(watchers[scp], watcher)
+
+        if timer.Exists("D_SCP173_BlinkTimer_" .. ply:SteamID()) then
+            timer.Remove("D_SCP173_BlinkTimer_" .. ply:SteamID())
+        end
+    end)
+
+    net.Receive("D_SCP173_ManualBlink", function(len, ply)
+        if !ManualBlinking or !IsValid(ply) or table.IsEmpty(watchers) or !ply:Alive() then return end
+
+        blinkers[ply] = blinkers[ply] or {
+            ["LastBlink"] = 0,
+            ["Blinking"] = false
+        }
+
+        if(blinkers[ply].LastBlink > CurTime() - ManualBlinkDelay) then return end
+
+        blinkers[ply]["LastBlink"] = CurTime()
+        blinkers[ply]["Blinking"] = true
+
+        CreateBlinkTimer(ply)
     end)
 
     scp.ID = "SCP_173"
@@ -61,7 +109,7 @@ if CLIENT then
         CanBlink = true
 
         if table.HasValue(watchingList, scp) && timer.Exists("D_SCP173_Watching_" .. scp:SteamID()) then
-            timer.Adjust("D_SCP173_Watching_" .. scp:SteamID(), 15, nil, nil)
+            timer.Adjust("D_SCP173_Watching_" .. scp:SteamID(), 30, nil, nil)
             return
         end 
 
@@ -71,7 +119,7 @@ if CLIENT then
         net.WriteEntity(scp)
         net.SendToServer()
 
-        timer.Create("D_SCP173_Watching_"  .. scp:SteamID(), 15, 1, function()
+        timer.Create("D_SCP173_Watching_"  .. scp:SteamID(), 30, 1, function()
             if !IsValid(v) || !IsValid(LocalPlayer()) then return end
 
             canBlink = false
@@ -90,10 +138,23 @@ if CLIENT then
         local SCPList = GetSCPs("SCP_173")
 
         for k,v in ipairs(SCPList) do
-            if(LocalPlayer():CanSee(v)) || v:GetPos():DistToSqr(LocalPlayer():GetPos()) < BlinkRange*BlinkRange then
+            if(LocalPlayer():CanSee(v)) then
                 AddWatcher(LocalPlayer(), v)
             end
         end
     end)
     timer.Start("D_SCP173_CanBlinkCheck")
+
+    if ManualBlinking then
+        local nextBlink = 0
+
+        hook.Add("Think", "D_SCP173_BlinkKeyInput", function()
+            if input.IsKeyDown( ManualBlinkKey ) and nextBlink < CurTime() and !gui.IsConsoleVisible() and !IsValid(vgui.GetKeyboardFocus()) then
+                nextBlink = CurTime() + 5
+
+                net.Start("D_SCP173_ManualBlink")
+                net.SendToServer()
+            end
+        end)
+    end
 end
