@@ -43,10 +43,11 @@ end
 --- Sets up the player's stats to the SCPs
 -- @param Player the player to set
 -- @param SCPTable the SCP's data
-function D_SCPBase.SetupPlayerSCP(ply, scpTable)
-    if scpTable.Respawn then
+function D_SCPBase.SetupPlayerSCP(ply, scpTable, respawn)
+    if respawn and scpTable.Respawn then
         ply:Kill()
         ply:Spawn()
+        return
     end
 
     ply:SetHealth(scpTable.Health)
@@ -67,3 +68,18 @@ function D_SCPBase.SetupPlayerSCP(ply, scpTable)
         scpTable.Hooks.PlayerSpawn(ply)
     end
 end
+
+hook.Add("PlayerSpawn", "D_SCPBase_SetupPlayerSCP", function(ply)
+    if !IsValid(ply) or !ply:IsSCP() then return end
+
+    local scpTable = D_SCPBase.SCPs[ply:GetSCP()]
+    D_SCPBase.SetupPlayerSCP(ply, scpTable, false)
+end)
+
+hook.Add("PlayerSwitchWeapon", "D_SCPBase_PreventWeapons", function(ply)
+    if !IsValid(ply) or !ply:IsSCP() then return end
+
+    local scpTable = D_SCPBase.SCPs[ply:GetSCP()]
+
+    if !scpTable.AllowWeapons then return true end
+end)

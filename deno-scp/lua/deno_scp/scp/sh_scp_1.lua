@@ -27,20 +27,30 @@ if SERVER then
     scp.Hooks = {
         // Called when the SCP takes damage (GM:EntityTakeDamage)
         ["OnDamaged"] = function(ply, dmg)
-            print(ply:Nick() .. " took " .. dmg:GetDamage() .. " damage.")
+            return
         end,
         // Called when the SCP dies (GM:PlayerDeath)
         ["OnDeath"] = function(victim, inflictor, attacker)
-            print(victim:Nick() .. " died.")
+            return
         end,
         // Called when the SCP spawns + when the player is set to the SCP (GM:PlayerSpawn)
         ["OnSpawn"] = function(ply)
-            print(ply:Nick() .. " spawned.")
+            return
         end,
+        // Called every tick (GM:Think) with SCP player argument
+        ["OnTick"] = function(ply)
+            return
+        end,
+        // Called every 5 seconds
+        ["Timer5s"] = function(ply)
+            return
+        end,
+        // Called every second
+        ["Timer1s"] = function(ply)
+            return
+        end
     }
 
     // Registers the SCP to the system, first param = ID, second param = SCP table
     D_SCPBase.RegisterSCP(scp)
-elseif CLIENT then
-    // Do client side stuff here!
 end
