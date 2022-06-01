@@ -11,7 +11,7 @@ local hooks = {
 
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("EntityTakeDamage", "D_SCPBase_OnDamaged")
-                print("[(D) SCP-Base Loader] " .. "Removed hook D_SCPBase_OnDamaged due to lack of listeners")
+                print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnDamaged")
                 return 
             end
 
@@ -34,7 +34,7 @@ local hooks = {
 
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("PlayerDeath", "D_SCPBase_OnDeath")
-                print("[(D) SCP-Base Loader] " .. "Removed hook D_SCPBase_OnDeath due to lack of listeners")
+                print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnDeath")
                 return 
             end
 
@@ -57,7 +57,7 @@ local hooks = {
 
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("PlayerSpawn", "D_SCPBase_OnSpawn")
-                print("[(D) SCP-Base Loader] " .. "Removed hook D_SCPBase_OnSpawn due to lack of listeners")
+                print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnSpawn")
                 return 
             end
 
@@ -80,7 +80,7 @@ local hooks = {
 
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("Think", "D_SCPBase_OnTick")
-                print("[(D) SCP-Base Loader] " .. "Removed hook D_SCPBase_OnTick due to lack of listeners")
+                print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnTick")
                 return 
             end
 

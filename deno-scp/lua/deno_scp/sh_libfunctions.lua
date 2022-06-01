@@ -2,7 +2,9 @@
 
 local plyMeta = FindMetaTable("Player")
 
-// If ent is on the players screen return true, else return false
+--- Checks if the player can see the target.
+-- @param ent Entity to check
+-- @return True if the player can see the entity
 function plyMeta:CanSee(ent)
     local plyEye = self:EyeAngles():Forward()
     local plyToEnt = ent:GetPos() - self:GetPos()
@@ -20,9 +22,11 @@ function plyMeta:CanSee(ent)
             start = self:GetShootPos(),
             endpos = spot,
             filter = function(hit) 
-                // I want it to work even if there is a player in the way, this is kind of a hacky way to do that but it's whatever 
-                if hit == ent then return true
-                else return !hit:IsPlayer() end
+                if hit == ent then 
+                    return true
+                else 
+                    return !hit:IsPlayer() 
+                end
             end
         })
 
