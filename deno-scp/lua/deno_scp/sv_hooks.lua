@@ -93,6 +93,56 @@ local hooks = {
                 hookData.Function(ply)
             end
         end 
+    },
+    ["Timer5s"] = {
+        ["Hook"] = nil,
+        ["Function"] = function()
+            if timer.Exists("D_SCPBase_Timer5s") then return end
+
+            timer.Create("D_SCPBase_Timer5s", 5, 0, function()
+                local listeners = watchLog["Timer5s"]
+
+                if not istable(listeners) or table.IsEmpty(listeners) then 
+                    timer.Remove("D_SCPBase_Timer5s")
+                    print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer5s")
+                    return 
+                end
+    
+                for ply, hookData in pairs(listeners) do
+                    if !IsValid(ply) or !istable(hookData) or hookData.SCPID != ply:GetSCP() then
+                        listeners[ply] = nil
+                        continue
+                    end
+            
+                    hookData.Function(ply)
+                end
+            end)
+        end
+    },
+    ["Timer1s"] = {
+        ["Hook"] = nil,
+        ["Function"] = function()
+            if timer.Exists("D_SCPBase_Timer1s") then return end
+
+            timer.Create("D_SCPBase_Timer1s", 1, 0, function()
+                local listeners = watchLog["Timer1s"]
+
+                if not istable(listeners) or table.IsEmpty(listeners) then 
+                    timer.Remove("D_SCPBase_Timer1s")
+                    print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer1s")
+                    return 
+                end
+    
+                for ply, hookData in pairs(listeners) do
+                    if !IsValid(ply) or !istable(hookData) or hookData.SCPID != ply:GetSCP() then
+                        listeners[ply] = nil
+                        continue
+                    end
+            
+                    hookData.Function(ply)
+                end
+            end)
+        end
     }
 }
 
@@ -111,6 +161,11 @@ function D_SCPBase.RegisterSCPHooks(ply, scpTable)
             ["Function"] = hookFunction,
             ["SCPID"] = scpTable.ID
         }
+
+        if not IsValid(hooks[HookName].Hook) then
+            hooks[HookName].Function()
+            return
+        end
 
         hook.Add(hooks[hookName].Hook, "D_SCPBase_" .. hookName, hooks[hookName].Function)
     end
