@@ -1,10 +1,33 @@
+// The range around the SCP where players will start to blink
+local BlinkRange = 1024
+
 if SERVER then
     util.AddNetworkString("D_SCP173_AddWatcher")
 
+    D_SCPBase = D_SCPBase or {}
+
+    local scp = {}
     local watchers = {}
 
-    D_SCPBase = D_SCPBase or {}
-    local scp = {}
+    net.Receive("D_SCP173_AddWatcher", function(len, watcher)
+        local scp = net.ReadEntity()
+
+        if !IsValid(watcher) or !IsValid(scp) or scp:GetSCP() != "SCP_173" then return end
+
+        watchers[scp] = watchers[scp] or {}
+
+        watchers[scp][watcher] = true
+    end)
+
+    net.Receive("D_SCP173_RemoveWatcher", function(len, watcher)
+        local scp = net.ReadEntity()
+
+        if !IsValid(watcher) or !IsValid(scp) or scp:GetSCP() != "SCP_173" then return end
+
+        watchers[scp] = watchers[scp] or {}
+
+        watchers[scp][watcher] = nil
+    end)
 
     scp.ID = "SCP_173"
     scp.Health = 10000
@@ -12,9 +35,6 @@ if SERVER then
     scp.Model = "models/armacham/security/guard_1.mdl"
 
     scp.Hooks = {
-        ["OnDamaged"] = function(ply, dmg)
-            print("peanut got hurt")
-        end,
         ["OnTick"] = function(scp)
             for ply,v in pairs(watchers[scp]) do
                 if ply:CanSee(scp) then
@@ -26,28 +46,6 @@ if SERVER then
             scp:SetColor(Color(0, 255, 0))
         end
     }
-
-    net.Receive("D_SCP173_AddWatcher", function()
-        local watcher = net.ReadEntity()
-        local scp = net.ReadEntity()
-
-        if !IsValid(watcher) or !IsValid(scp) then return end
-
-        watchers[scp] = watchers[scp] or {}
-
-        watchers[scp][watcher] = true
-    end)
-
-    net.Receive("D_SCP173_RemoveWatcher", function()
-        local watcher = net.ReadEntity()
-        local scp = net.ReadEntity()
-
-        if !IsValid(watcher) or !IsValid(scp) then return end
-
-        watchers[scp] = watchers[scp] or {}
-
-        watchers[scp][watcher] = nil
-    end)
 
     D_SCPBase.RegisterSCP(scp)
 end
@@ -70,7 +68,6 @@ if CLIENT then
         table.insert(watchingList, scp)
 
         net.Start("D_SCP173_AddWatcher")
-        net.WriteEntity(LocalPlayer())
         net.WriteEntity(scp)
         net.SendToServer()
 
@@ -78,7 +75,6 @@ if CLIENT then
             if !IsValid(v) || !IsValid(LocalPlayer()) then return end
 
             net.Start("D_SCP173_RemoveWatcher")
-            net.WriteEntity(LocalPlayer())
             net.WriteEntity(scp)
             net.SendToServer()
         end)
@@ -103,7 +99,7 @@ if CLIENT then
                 continue
             end
 
-            if(LocalPlayer():CanSee(v)) || v:GetPos():Distance(LocalPlayer():GetPos()) < 1024 then
+            if(LocalPlayer():CanSee(v)) || v:GetPos():DistToSqr(LocalPlayer():GetPos()) < BlinkRange*BlinkRange then
                 AddWatcher(LocalPlayer(), v)
             end
         end
