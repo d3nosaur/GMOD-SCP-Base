@@ -47,8 +47,6 @@ if SERVER then
         
         if !(lastManualBlink[ply] < CurTime() - ManualBlinkDelay) then return end
 
-        print("manual blink")
-
         blinkers[ply] = CurTime()
         lastManualBlink[ply] = CurTime()
     end)
