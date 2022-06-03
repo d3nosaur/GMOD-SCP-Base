@@ -143,6 +143,31 @@ local hooks = {
                 end
             end)
         end
+    },
+    ["Timer1/4s"] = {
+        ["Hook"] = nil,
+        ["Function"] = function()
+            if timer.Exists("D_SCPBase_Timer1/4s") then return end
+
+            timer.Create("D_SCPBase_Timer1/4s", 0.25, 0, function()
+                local listeners = watchLog["Timer1/4s"]
+
+                if not istable(listeners) or table.IsEmpty(listeners) then 
+                    timer.Remove("D_SCPBase_Timer1/4s")
+                    print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer1/4s")
+                    return 
+                end
+    
+                for ply, hookData in pairs(listeners) do
+                    if !IsValid(ply) or !istable(hookData) or hookData.SCPID != ply:GetSCP() then
+                        listeners[ply] = nil
+                        continue
+                    end
+            
+                    hookData.Function(ply)
+                end
+            end)
+        end
     }
 }
 
@@ -162,8 +187,8 @@ function D_SCPBase.RegisterSCPHooks(ply, scpTable)
             ["SCPID"] = scpTable.ID
         }
 
-        if not IsValid(hooks[HookName].Hook) then
-            hooks[HookName].Function()
+        if !hooks[hookName].Hook then
+            hooks[hookName].Function()
             return
         end
 

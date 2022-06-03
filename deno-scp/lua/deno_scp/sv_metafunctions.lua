@@ -4,12 +4,20 @@ D_SCPBase.ActiveSCPs = D_SCPBase.ActiveSCPs || {}
 local plyMeta = FindMetaTable("Player")
 
 --- Get the SCP that the player is currently controlling
--- @return string The SCP id if the player is an SCP, otherwise nil
+-- @return string The SCP id if the player is an SCP
 function plyMeta:GetSCP()
-    if !self:IsValid() then return end
-    if !D_SCPBase.ActiveSCPs[self] then return nil end
+    if !self:IsValid() or !self:IsSCP() then return end
 
     return D_SCPBase.ActiveSCPs[self]
+end
+
+--- Checks if the player is currently an SCP
+-- @return boolean True if the player is an SCP, otherwise false
+function plyMeta:IsSCP()
+    if !self:IsValid() then return end
+    if !D_SCPBase.ActiveSCPs[self] then return false end
+
+    return true
 end
 
 --- Sets the player to an SCP
@@ -17,6 +25,7 @@ end
 function plyMeta:SetSCP(scp)
     if !self:IsValid() then return end
 
+    self:RemoveSCP()
     D_SCPBase.SetSCP(self, scp)
 end
 
