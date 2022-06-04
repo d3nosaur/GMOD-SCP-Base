@@ -6,18 +6,19 @@ local plyMeta = FindMetaTable("Player")
 -- @param ent Entity to check
 -- @return True if the player can see the entity
 function plyMeta:CanSee(ent)
-    local plyEye = self:EyeAngles():Forward()
-    local plyToEnt = ent:GetPos() - self:GetPos()
-    local angle = plyEye:Dot(plyToEnt:GetNormalized())
-
-    if angle < math.cos(1.0472) then return false end
-
+    // NPCs/Players feet can be off screen but rest on screen, this helps with that
     local checkSpots = {
         ent:GetPos(),
-        IsValid(ent.GetShootPos) and ent:GetShootPos() or nil
+        (ent.GetShootPos != nil and ent:GetShootPos() or nil)
     }
 
-    for _, spot in ipairs(checkSpots) do
+    for _, spot in pairs(checkSpots) do
+        local spotToPly = (spot-self:EyePos()):GetNormalized()
+        local plyDirection = self:GetAimVector():GetNormalized()
+        local angle = plyDirection:Dot(spotToPly)
+
+        if angle < math.cos(1.15) then continue end
+
         local tr = util.TraceLine({
             start = self:GetShootPos(),
             endpos = spot,
@@ -25,7 +26,9 @@ function plyMeta:CanSee(ent)
             mask = MASK_BLOCKLOS_AND_NPCS
         })
 
-        if tr.Entity == ent then return true end
+        if tr.Entity == ent then 
+            return true 
+        end
     end
 
     return false
