@@ -18,12 +18,12 @@ function plyMeta:CanSee(ent)
         local angle = plyDirection:Dot(spotToPly)
 
         if angle < math.cos(1.15) then continue end
-
+        
         local tr = util.TraceLine({
             start = self:GetShootPos(),
             endpos = spot,
             filter = self,
-            mask = MASK_BLOCKLOS_AND_NPCS
+            mask = MASK_BLOCKLOS_AND_NPCS,
         })
 
         if tr.Entity == ent then 

@@ -6,6 +6,10 @@ local ForcedBlinkDelay = 7.5
 local ManualBlinkKey = KEY_N
 // Whether or not to allow manual blinking
 local ManualBlinking = true
+// Length of the blink (In seconds) (Only affects client side vision)
+local BlinkLength = 0.3
+// Whether or not to animate the client side blink 
+local AnimatedBlink = true
 
 if SERVER then
     util.AddNetworkString("D_SCP173_AddWatcher")
@@ -55,6 +59,8 @@ if SERVER then
     scp.Health = 10000
     scp.Armor = 0
     scp.Model = "models/mossman.mdl"
+    scp.RunSpeed = 600
+    scp.WalkSpeed = 400
 
     scp.Hooks = {
         ["OnTick"] = function(scp)
@@ -73,11 +79,20 @@ if SERVER then
 
                 if ply:CanSee(scp) then
                     scp:SetColor(Color(255, 0, 0))
+
+                    if !scp:IsFlagSet(FL_FROZEN) then
+                        scp:Freeze(true)
+                    end
+
                     return 
                 end
             end
 
             scp:SetColor(Color(0, 255, 0))
+
+            if scp:IsFlagSet(FL_FROZEN) then
+                scp:Freeze(false)
+            end
         end
     }
 
@@ -86,6 +101,7 @@ end
 
 if CLIENT then
     local CanBlink = false
+    local LastBlink = 0
 
     local watchingList = {}
 
@@ -130,6 +146,34 @@ if CLIENT then
         end
     end)
     timer.Start("D_SCP173_CanBlinkCheck")
+
+    local function BlinkHUD()
+        if lastBlink < CurTime() - BlinkLength then
+            hook.Remove("PreDrawHUD", "D_SCP173_BlinkHUD")
+            return
+        end
+
+        if AnimatedBlink then
+            local blinkVal = Lerp((CurTime() - lastBlink) / (BlinkLength * 0.2), 0, 1)
+
+            cam.Start2D()
+                surface.SetDrawColor(Color(0, 0, 0, 255 * blinkVal))
+                surface.DrawRect(0, 0, ScrW(), (ScrH()*0.5) * blinkVal)
+                surface.DrawRect(0, (ScrH()*0.5) + ((ScrH()*0.5) * (1-blinkVal)), ScrW(), ScrH())
+            cam.End2D()
+        else
+            cam.Start2D()
+                surface.SetDrawColor(Color(0, 0, 0, 255))
+                surface.DrawRect(0, 0, ScrW(), ScrH())
+            cam.End2D()
+        end
+    end
+
+    net.Receive("D_SCP173_BlinkHUD", function()
+        lastBlink = CurTime()
+
+        hook.Add("PreDrawHUD", "D_SCP173_BlinkHUD", BlinkHUD)
+    end)
 
     if ManualBlinking then
         local nextBlink = 0
