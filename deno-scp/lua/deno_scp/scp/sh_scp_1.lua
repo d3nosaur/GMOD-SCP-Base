@@ -22,6 +22,10 @@ if SERVER then
     scp.AllowWeapons = false
     // Weapons to give the SCP on spawn (Default: {})
     scp.Weapons = {}
+    // Speed when the player is sprinting (Holding shift)
+    scp.RunSpeed = 600
+    // Speed when the player is walking (Just holding W)
+    scp.WalkSpeed = 400
 
     // Serverside only hooks, client side defined manually below
     scp.Hooks = {

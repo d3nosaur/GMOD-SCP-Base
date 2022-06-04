@@ -14,6 +14,8 @@ function D_SCPBase.RegisterSCP(scpTable)
     scpTable.KeepWeapons = scpTable.KeepWeapons or false
     scpTable.AllowWeapons = scpTable.AllowWeapons or false
     scpTable.Weapons = scpTable.Weapons or {}
+    scpTable.RunSpeed = scpTable.RunSpeed or 240
+    scpTable.WalkSpeed = scpTable.WalkSpeed or 160
 
     scpTable.Hooks = scpTable.Hooks or {}
 
@@ -55,6 +57,8 @@ function D_SCPBase.SetupPlayerSCP(ply, scpTable, respawn)
     ply:SetArmor(scpTable.Armor)
     ply:SetMaxArmor(scpTable.Armor)
     ply:SetModel(scpTable.Model)
+    ply:SetRunSpeed(scpTable.RunSpeed)
+    ply:SetWalkSpeed(scpTable.WalkSpeed)
         
     if !scpTable.KeepWeapons then
         ply:StripWeapons()
