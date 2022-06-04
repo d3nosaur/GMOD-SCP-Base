@@ -54,10 +54,10 @@ if SERVER then
     scp.ID = "SCP_173"
     scp.Health = 10000
     scp.Armor = 0
-    scp.Model = "models/armacham/security/guard_1.mdl"
+    scp.Model = "models/mossman.mdl"
 
     scp.Hooks = {
-        ["Timer1/4s"] = function(scp)
+        ["OnTick"] = function(scp)
             if not istable(watchers[scp]) then return end
 
             for _, ply in ipairs(watchers[scp]) do
