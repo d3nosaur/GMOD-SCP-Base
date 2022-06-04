@@ -14,20 +14,15 @@ function plyMeta:CanSee(ent)
 
     local checkSpots = {
         ent:GetPos(),
-        ent:GetShootPos()
+        IsValid(ent.GetShootPos) and ent:GetShootPos() or nil
     }
 
     for _, spot in ipairs(checkSpots) do
         local tr = util.TraceLine({
             start = self:GetShootPos(),
             endpos = spot,
-            filter = function(hit) 
-                if hit == ent then 
-                    return true
-                else 
-                    return !hit:IsPlayer() 
-                end
-            end
+            filter = self,
+            mask = MASK_BLOCKLOS_AND_NPCS
         })
 
         if tr.Entity == ent then return true end
