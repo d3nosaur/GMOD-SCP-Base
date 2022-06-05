@@ -62,6 +62,7 @@ if SERVER then
     scp.RunSpeed = 600
     scp.WalkSpeed = 400
     scp.Respawn = true
+    scp.CanSpeak = false
 
     scp.Hooks = {
         ["OnTick"] = function(scp)

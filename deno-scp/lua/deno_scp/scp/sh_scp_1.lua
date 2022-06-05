@@ -26,6 +26,10 @@ if SERVER then
     scp.RunSpeed = 600
     // Speed when the player is walking (Just holding W)
     scp.WalkSpeed = 400
+    // Whether or not the player can speak (Only voice chat) (Default: false)
+    scp.CanSpeak = false
+    // Whether or not the player can hear other players (Only voice chat) (Default: true)
+    scp.CanListen = true
 
     // Serverside only hooks, client side defined manually below
     scp.Hooks = {
