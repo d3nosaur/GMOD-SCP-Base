@@ -31,7 +31,7 @@ function D_SCPBase.SetSCP(ply, scp)
 
     local scpTable = D_SCPBase.SCPs[scp]
 
-    D_SCPBase.SetupPlayerSCP(ply, scpTable)
+    D_SCPBase.SetupPlayerSCP(ply, scpTable, true)
     D_SCPBase.RegisterSCPHooks(ply, scpTable)
 
     D_SCPBase.ActiveSCPs[ply] = scp
@@ -49,7 +49,6 @@ function D_SCPBase.SetupPlayerSCP(ply, scpTable, respawn)
     if respawn and scpTable.Respawn then
         ply:Kill()
         ply:Spawn()
-        return
     end
 
     ply:SetHealth(scpTable.Health)

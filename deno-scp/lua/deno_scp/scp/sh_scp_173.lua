@@ -61,6 +61,7 @@ if SERVER then
     scp.Model = "models/mossman.mdl"
     scp.RunSpeed = 600
     scp.WalkSpeed = 400
+    scp.Respawn = true
 
     scp.Hooks = {
         ["OnTick"] = function(scp)
