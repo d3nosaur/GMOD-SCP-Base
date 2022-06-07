@@ -5,6 +5,7 @@ local plyMeta = FindMetaTable("Player")
 --- Checks if the player can see the target.
 -- @param ent Entity to check
 -- @return True if the player can see the entity
+local FOVAngle = math.cos(1.15)
 function plyMeta:CanSee(ent)
     -- NPCs/Players feet can be off screen but rest on screen, this helps with that
     local checkSpots = {
@@ -12,13 +13,13 @@ function plyMeta:CanSee(ent)
         (ent.GetShootPos != nil and ent:GetShootPos() or nil)
     }
 
+    local plyDirection = self:GetAimVector()
     for _, spot in pairs(checkSpots) do
         -- dot product vector math to check if ent is within players FOV.
         local spotToPly = (spot-self:EyePos()):GetNormalized()
-        local plyDirection = self:GetAimVector():GetNormalized()
         local angle = plyDirection:Dot(spotToPly)
 
-        if angle < math.cos(1.15) then continue end
+        if angle < FOVAngle then continue end
         
         -- Trace masks don't work on clients, so in order to have this check I'll split it up
         if SERVER then
@@ -34,7 +35,7 @@ function plyMeta:CanSee(ent)
                 return true 
             end
         else
-            local traces = TraceToEnd({
+            local traces = util.TraceToEnd({
                 start = self:GetShootPos(),
                 endpos = spot,
                 filter = self,
@@ -59,22 +60,31 @@ end
 -- @param Trace: the trace data, same as util.TraceLine input
 -- @param Integer: Maximum number of traces to do (default 10)
 -- @return Table: with all of the trace line outputs
-function TraceToEnd(traceData, maxTraces)
+function util.TraceToEnd(traceData, maxTraces)
     local traces = {}
 
-    -- Make sure the filter is a table so I can append values later
-    if type(traceData.filter) != "table" then
-        traceData.filter = {traceData.filter}
+    local filteredEnts = {}
+    if isfunction(traceData.filter) then
+        local oldFunction = traceData.filter
+
+        traceData.filter = function(ent)
+            if table.HasValue(filteredEnts, ent) then return false end
+
+            return oldFunction(ent)
+        end
+    elseif !istable(TraceData.filter) then
+        filteredEnts = {traceData.filter}
+        traceData.filter = filteredEnts
     end
 
     for i=1, maxTraces or 10 do
         local trace = util.TraceLine(traceData)
-        
+
         if !trace.Hit or trace.HitPos == traceData.endpos then break end
 
         traceData.start = trace.HitPos
         table.insert(traces, trace)
-        table.insert(traceData.filter, trace.Entity)
+        table.insert(filteredEnts, trace.Entity)
     end
 
     return traces
@@ -83,7 +93,7 @@ end
 --- Gives you a list of all the players currently using an SCP
 -- @param SCPID The type of SCP
 -- @return List<Player> The players
-function GetSCPs(scp)
+function player.GetSCPs(scp)
     local SCPList = {}
 
     for _, ply in ipairs(player.GetAll()) do
@@ -93,4 +103,22 @@ function GetSCPs(scp)
     end
 
     return SCPList
+end
+
+--- Finds a player by their name.
+-- @param name The name of the player.
+-- @return Player, the player if found | ERROR_MULTIPLE_FOUND if multiple players found | false if no players found
+ERROR_MULTIPLE_FOUND = true
+function player.FindPlayer(name)
+    name = string.lower(name)
+
+    local target = false
+    for _,ply in ipairs(player.GetAll()) do
+        if !string.find(string.lower(ply:Nick()), string.lower(NameLower)) then continue end
+
+        if target then return ERROR_MULTIPLE_FOUND end
+        target = ply
+    end
+
+    return target or false
 end

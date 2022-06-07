@@ -181,7 +181,7 @@ if CLIENT then
     timer.Create("D_SCP173_CanBlinkCheck", 0.1, 0, function()
         if not IsValid(LocalPlayer()) then return end
 
-        local SCPList = GetSCPs("SCP_173")
+        local SCPList = player.GetSCPs("SCP_173")
 
         for k,v in ipairs(SCPList) do
             if(LocalPlayer():CanSee(v)) then

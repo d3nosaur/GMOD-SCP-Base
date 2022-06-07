@@ -31,14 +31,14 @@ function D_SCPBase.SetupPlayerSCP(ply, scpTable, respawn)
 end
 
 hook.Add("PlayerSpawn", "D_SCPBase_SetupPlayerSCP", function(ply)
-    if !IsValid(ply) or !ply:IsSCP() then return end
+    if !ply:IsSCP() then return end
 
     local scpTable = D_SCPBase.SCPs[ply:GetSCP()]
     D_SCPBase.SetupPlayerSCP(ply, scpTable, false)
 end)
 
 hook.Add("PlayerSwitchWeapon", "D_SCPBase_PreventWeapons", function(ply)
-    if !IsValid(ply) or !ply:IsSCP() then return end
+    if !ply:IsSCP() then return end
 
     local scpTable = D_SCPBase.SCPs[ply:GetSCP()]
 
@@ -46,12 +46,12 @@ hook.Add("PlayerSwitchWeapon", "D_SCPBase_PreventWeapons", function(ply)
 end)
 
 hook.Add("PlayerCanHearPlayersVoice", "D_SCPBase_DisableVoice", function(listener, speaker)
-    if IsValid(listener) and listener:IsSCP() then
+    if listener:IsSCP() then
         local listenerTable = D_SCPBase.SCPs[listener:GetSCP()]
         if !listenerTable.CanListen then return false end
     end
 
-    if IsValid(speaker) and speaker:IsSCP() then
+    if speaker:IsSCP() then
         local speakerTable = D_SCPBase.SCPs[speaker:GetSCP()]
         if !speakerTable.CanSpeak then return false end
     end
