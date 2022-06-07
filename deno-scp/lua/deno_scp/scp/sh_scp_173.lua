@@ -168,7 +168,7 @@ if CLIENT then
         net.SendToServer()
 
         timer.Create("D_SCP173_Watching_"  .. scp:SteamID(), 30, 1, function()
-            if !IsValid(v) || !IsValid(LocalPlayer()) then return end
+            if !IsValid(scp) || !IsValid(LocalPlayer()) then return end
 
             canBlink = false
 
@@ -204,7 +204,6 @@ if CLIENT then
     end
 
     --- The code to handle the client side HUD when blinking
-    local BlinkColor = Color(0, 0, 0, 255)
     local function BlinkHUD()
         if lastBlink < CurTime() - BlinkLength then
             hook.Remove("PreDrawHUD", "D_SCP173_BlinkHUD")
@@ -215,13 +214,13 @@ if CLIENT then
             local blinkVal = Lerp((CurTime() - lastBlink) / (BlinkLength * 0.2), 0, 1)
 
             cam.Start2D()
-                surface.SetDrawColor(BlinkColor:Unpack())
+                surface.SetDrawColor(0, 0, 0, 255 * blinkVal)
                 surface.DrawRect(0, 0, ScrW(), (ScrH()*0.5) * blinkVal)
                 surface.DrawRect(0, (ScrH()*0.5) + ((ScrH()*0.5) * (1-blinkVal)), ScrW(), ScrH())
             cam.End2D()
         else
             cam.Start2D()
-                surface.SetDrawColor(BlinkColor:Unpack())
+                surface.SetDrawColor(0, 0, 0, 255)
                 surface.DrawRect(0, 0, ScrW(), ScrH())
             cam.End2D()
         end
