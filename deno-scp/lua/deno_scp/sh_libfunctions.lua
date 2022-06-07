@@ -72,7 +72,7 @@ function util.TraceToEnd(traceData, maxTraces)
 
             return oldFunction(ent)
         end
-    elseif !istable(TraceData.filter) then
+    elseif !istable(traceData.filter) then
         filteredEnts = {traceData.filter}
         traceData.filter = filteredEnts
     end
@@ -110,11 +110,9 @@ end
 -- @return Player, the player if found | ERROR_MULTIPLE_FOUND if multiple players found | false if no players found
 ERROR_MULTIPLE_FOUND = true
 function player.FindPlayer(name)
-    name = string.lower(name)
-
     local target = false
     for _,ply in ipairs(player.GetAll()) do
-        if !string.find(string.lower(ply:Nick()), string.lower(NameLower)) then continue end
+        if !string.find(string.lower(ply:Nick()), name) then continue end
 
         if target then return ERROR_MULTIPLE_FOUND end
         target = ply
