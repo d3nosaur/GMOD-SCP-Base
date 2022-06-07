@@ -1,6 +1,6 @@
 D_SCPBase = D_SCPBase or {}
 
-// Hashmap of events and the people who are listening to them
+-- Hashmap of events and the people who are listening to them
 local watchLog = {}
 
 local hooks = {

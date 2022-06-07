@@ -1,4 +1,4 @@
-// Some functions that might be useful for future SCPs
+-- Some functions that might be useful for future SCPs
 
 local plyMeta = FindMetaTable("Player")
 
@@ -6,27 +6,27 @@ local plyMeta = FindMetaTable("Player")
 -- @param ent Entity to check
 -- @return True if the player can see the entity
 function plyMeta:CanSee(ent)
-    // NPCs/Players feet can be off screen but rest on screen, this helps with that
+    -- NPCs/Players feet can be off screen but rest on screen, this helps with that
     local checkSpots = {
         ent:GetPos(),
         (ent.GetShootPos != nil and ent:GetShootPos() or nil)
     }
 
     for _, spot in pairs(checkSpots) do
-        // dot product vector math to check if ent is within players FOV.
+        -- dot product vector math to check if ent is within players FOV.
         local spotToPly = (spot-self:EyePos()):GetNormalized()
         local plyDirection = self:GetAimVector():GetNormalized()
         local angle = plyDirection:Dot(spotToPly)
 
         if angle < math.cos(1.15) then continue end
         
-        // Trace masks don't work on clients, so in order to have this check I'll split it up
+        -- Trace masks don't work on clients, so in order to have this check I'll split it up
         if SERVER then
             local tr = util.TraceLine({
                 start = self:GetShootPos(),
                 endpos = spot,
                 filter = self,
-                // Doesn't hit see through things (windows, fences, etc)
+                -- Doesn't hit see through things (windows, fences, etc)
                 mask = MASK_BLOCKLOS_AND_NPCS,
             })
 
@@ -43,9 +43,9 @@ function plyMeta:CanSee(ent)
             for _, tr in ipairs(traces) do
                 if tr.Entity == ent then 
                     return true 
-                // Not sure if there's a better way to check if the trace hit something see through so I just cancel if it hits the world
+                -- Not sure if there's a better way to check if the trace hit something see through so I just cancel if it hits the world
                 elseif tr.HitWorld then
-                    // don't want to return false here in case one of the other checkspots works
+                    -- don't want to return false here in case one of the other checkspots works
                     break
                 end
             end
@@ -62,7 +62,7 @@ end
 function TraceToEnd(traceData, maxTraces)
     local traces = {}
 
-    // Make sure the filter is a table so I can append values later
+    -- Make sure the filter is a table so I can append values later
     if type(traceData.filter) != "table" then
         traceData.filter = {traceData.filter}
     end
