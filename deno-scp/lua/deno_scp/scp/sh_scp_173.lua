@@ -1,20 +1,20 @@
-// Delay between manual blinks
+-- Delay between manual blinks
 local ManualBlinkDelay = 0.5
-// Delay between forced blinks
+-- Delay between forced blinks
 local ForcedBlinkDelay = 7.5
-// Key to blink manually
+-- Key to blink manually
 local ManualBlinkKey = KEY_N
-// Whether or not to allow manual blinking
+-- Whether or not to allow manual blinking
 local ManualBlinking = true
-// Length of the blink (In seconds) (Only affects client side vision)
+-- Length of the blink (In seconds) (Only affects client side vision)
 local BlinkLength = 0.3
-// Whether or not to animate the client side blink 
+-- Whether or not to animate the client side blink 
 local AnimatedBlink = true
-// Delay between attacks (In seconds)
+-- Delay between attacks (In seconds)
 local AttackDelay = 3
-// Attack Range (In units)
+-- Attack Range (In units)
 local AttackRange = 256
-// Snap Neck Damage
+-- Snap Neck Damage
 local AttackDamage = 10000
 
 if SERVER then
@@ -25,11 +25,11 @@ if SERVER then
 
     D_SCPBase = D_SCPBase or {}
 
-    // Table of SCPs and their watchers <SCP, {Watchers}>
+    -- Table of SCPs and their watchers <SCP, {Watchers}>
     local watchers = {}
-    // Table of watchers and their last blink time <Player, Time>
+    -- Table of watchers and their last blink time <Player, Time>
     local blinkers = {}
-    // Table of SCPs and the time of their last attack <Player, Time>
+    -- Table of SCPs and the time of their last attack <Player, Time>
     local attackers = {}
 
     net.Receive("D_SCP173_AddWatcher", function(len, watcher)
@@ -102,12 +102,12 @@ if SERVER then
         ["OnTick"] = function(scp)
             if not istable(watchers[scp]) then return end
 
-            // Iterate over all players who have recently seen the SCP
+            -- Iterate over all players who have recently seen the SCP
             for _, ply in ipairs(watchers[scp]) do
-                // Initialize blinker array with player if it doesn't exist
+                -- Initialize blinker array with player if it doesn't exist
                 blinkers[ply] = blinkers[ply] or CurTime()
 
-                // If the player is blinking, blink them and disregard rest of code
+                -- If the player is blinking, blink them and disregard rest of code
                 if blinkers[ply] < CurTime() then
                     blinkers[ply] = CurTime() + ForcedBlinkDelay
 
@@ -116,7 +116,7 @@ if SERVER then
                     continue
                 end
 
-                // If the player is not blinking and can see the scp, freeze the SCP
+                -- If the player is not blinking and can see the scp, freeze the SCP
                 if ply:CanSee(scp) then
                     if !scp:IsFlagSet(FL_FROZEN) then
                         scp:Freeze(true)
@@ -126,11 +126,11 @@ if SERVER then
                 end
             end
 
-            // Unfreeze the SCP (This will only trigger if no players can see it)
+            -- Unfreeze the SCP (This will only trigger if no players can see it)
             if scp:IsFlagSet(FL_FROZEN) then
                 scp:Freeze(false)
 
-                // Call the attack function when unfrozen if they are trying to attack, helps make it easier to attack when people are blinking
+                -- Call the attack function when unfrozen if they are trying to attack, helps make it easier to attack when people are blinking
                 if scp:KeyDown(IN_ATTACK) then
                     SCP173_Attack(scp)
                 end
@@ -176,8 +176,6 @@ if CLIENT then
             net.WriteEntity(scp)
             net.SendToServer()
         end)
-
-        timer.Start("D_SCP173_Watching_" .. scp:SteamID())
     end
 
     timer.Create("D_SCP173_CanBlinkCheck", 0.1, 0, function()
@@ -191,7 +189,6 @@ if CLIENT then
             end
         end
     end)
-    timer.Start("D_SCP173_CanBlinkCheck")
 
     if ManualBlinking then
         local nextBlink = 0
@@ -207,6 +204,7 @@ if CLIENT then
     end
 
     --- The code to handle the client side HUD when blinking
+    local BlinkColor = Color(0, 0, 0, 255)
     local function BlinkHUD()
         if lastBlink < CurTime() - BlinkLength then
             hook.Remove("PreDrawHUD", "D_SCP173_BlinkHUD")
@@ -217,13 +215,13 @@ if CLIENT then
             local blinkVal = Lerp((CurTime() - lastBlink) / (BlinkLength * 0.2), 0, 1)
 
             cam.Start2D()
-                surface.SetDrawColor(Color(0, 0, 0, 255 * blinkVal))
+                surface.SetDrawColor(BlinkColor:Unpack())
                 surface.DrawRect(0, 0, ScrW(), (ScrH()*0.5) * blinkVal)
                 surface.DrawRect(0, (ScrH()*0.5) + ((ScrH()*0.5) * (1-blinkVal)), ScrW(), ScrH())
             cam.End2D()
         else
             cam.Start2D()
-                surface.SetDrawColor(Color(0, 0, 0, 255))
+                surface.SetDrawColor(BlinkColor:Unpack())
                 surface.DrawRect(0, 0, ScrW(), ScrH())
             cam.End2D()
         end
