@@ -168,6 +168,31 @@ local hooks = {
                 end
             end)
         end
+    },
+    ["OnPrimaryAttack"] = {
+        ["Hook"] = "KeyPress",
+        ["Function"] = function(ply, key)
+            if key != IN_ATTACK or !IsValid(ply) or !ply:Alive() then return end
+
+            local listeners = watchLog["OnPrimaryAttack"]
+
+            if not istable(listeners) or table.IsEmpty(listeners) then 
+                hook.Remove("KeyPress", "D_SCPBase_OnPrimaryAttack")
+                print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnPrimaryAttack")
+                return 
+            end
+
+            if listeners[ply] then
+                local hookData = listeners[ply]
+
+                if(hookData.SCPID != ply:GetSCP()) then
+                    listeners[ply] = nil
+                    return
+                end
+
+                hookData.Function(ply, inflictor, attacker)
+            end
+        end
     }
 }
 

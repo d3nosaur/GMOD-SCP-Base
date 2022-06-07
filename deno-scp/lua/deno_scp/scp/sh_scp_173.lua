@@ -10,6 +10,12 @@ local ManualBlinking = true
 local BlinkLength = 0.3
 // Whether or not to animate the client side blink 
 local AnimatedBlink = true
+// Delay between attacks (In seconds)
+local AttackDelay = 3
+// Attack Range (In units)
+local AttackRange = 256
+// Snap Neck Damage
+local AttackDamage = 10000
 
 if SERVER then
     util.AddNetworkString("D_SCP173_AddWatcher")
@@ -19,9 +25,12 @@ if SERVER then
 
     D_SCPBase = D_SCPBase or {}
 
-    local scp = {}
+    // Table of SCPs and their watchers <SCP, {Watchers}>
     local watchers = {}
+    // Table of watchers and their last blink time <Player, Time>
     local blinkers = {}
+    // Table of SCPs and the time of their last attack <Player, Time>
+    local attackers = {}
 
     net.Receive("D_SCP173_AddWatcher", function(len, watcher)
         local scp = net.ReadEntity()
@@ -55,6 +64,31 @@ if SERVER then
         lastManualBlink[ply] = CurTime()
     end)
 
+    local function SCP173_Attack(ply)
+        if ply:IsFlagSet(FL_FROZEN) then return end
+
+        attackers[ply] = attackers[ply] or 0
+
+        if !(attackers[ply] < CurTime() - AttackDelay) then return end
+
+        local tr = ply:GetEyeTrace()
+
+        local target = tr.Entity
+        if !IsValid(target) or !(target:IsPlayer() or target:IsNPC()) or tr.HitPos:DistToSqr(ply:EyePos()) > (AttackRange * AttackRange) or target:Health() <= 0 then return end
+
+        ply:SetPos(target:GetPos() - (target:GetPos() - ply:GetPos()):GetNormalized() * 40)
+        
+        local d = DamageInfo()
+        d:SetAttacker(ply)
+        d:SetDamage(AttackDamage)
+        d:SetDamageType(DMG_CRUSH)
+        target:TakeDamageInfo(d)
+
+        attackers[ply] = CurTime()
+    end
+
+    local scp = {}
+
     scp.ID = "SCP_173"
     scp.Health = 10000
     scp.Armor = 0
@@ -68,9 +102,12 @@ if SERVER then
         ["OnTick"] = function(scp)
             if not istable(watchers[scp]) then return end
 
+            // Iterate over all players who have recently seen the SCP
             for _, ply in ipairs(watchers[scp]) do
+                // Initialize blinker array with player if it doesn't exist
                 blinkers[ply] = blinkers[ply] or CurTime()
 
+                // If the player is blinking, blink them and disregard rest of code
                 if blinkers[ply] < CurTime() then
                     blinkers[ply] = CurTime() + ForcedBlinkDelay
 
@@ -79,9 +116,8 @@ if SERVER then
                     continue
                 end
 
+                // If the player is not blinking and can see the scp, freeze the SCP
                 if ply:CanSee(scp) then
-                    scp:SetColor(Color(255, 0, 0))
-
                     if !scp:IsFlagSet(FL_FROZEN) then
                         scp:Freeze(true)
                     end
@@ -90,11 +126,18 @@ if SERVER then
                 end
             end
 
-            scp:SetColor(Color(0, 255, 0))
-
+            // Unfreeze the SCP (This will only trigger if no players can see it)
             if scp:IsFlagSet(FL_FROZEN) then
                 scp:Freeze(false)
+
+                // Call the attack function when unfrozen if they are trying to attack, helps make it easier to attack when people are blinking
+                if scp:KeyDown(IN_ATTACK) then
+                    SCP173_Attack(scp)
+                end
             end
+        end,
+        ["OnPrimaryAttack"] = function(ply)
+            SCP173_Attack(ply)
         end
     }
 
@@ -107,6 +150,7 @@ if CLIENT then
 
     local watchingList = {}
 
+    --- The backend code that tells the server it's time to start blinking
     local function AddWatcher(watcher, scp)
         if !IsValid(watcher) or !IsValid(scp) then return end
 
@@ -149,6 +193,20 @@ if CLIENT then
     end)
     timer.Start("D_SCP173_CanBlinkCheck")
 
+    if ManualBlinking then
+        local nextBlink = 0
+
+        hook.Add("Think", "D_SCP173_BlinkKeyInput", function()
+            if input.IsKeyDown( ManualBlinkKey ) and nextBlink < CurTime() and !gui.IsConsoleVisible() and !IsValid(vgui.GetKeyboardFocus()) then
+                nextBlink = CurTime() + ManualBlinkDelay
+
+                net.Start("D_SCP173_ManualBlink")
+                net.SendToServer()
+            end
+        end)
+    end
+
+    --- The code to handle the client side HUD when blinking
     local function BlinkHUD()
         if lastBlink < CurTime() - BlinkLength then
             hook.Remove("PreDrawHUD", "D_SCP173_BlinkHUD")
@@ -176,17 +234,4 @@ if CLIENT then
 
         hook.Add("PreDrawHUD", "D_SCP173_BlinkHUD", BlinkHUD)
     end)
-
-    if ManualBlinking then
-        local nextBlink = 0
-
-        hook.Add("Think", "D_SCP173_BlinkKeyInput", function()
-            if input.IsKeyDown( ManualBlinkKey ) and nextBlink < CurTime() and !gui.IsConsoleVisible() and !IsValid(vgui.GetKeyboardFocus()) then
-                nextBlink = CurTime() + ManualBlinkDelay
-
-                net.Start("D_SCP173_ManualBlink")
-                net.SendToServer()
-            end
-        end)
-    end
 end
