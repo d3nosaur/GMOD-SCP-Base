@@ -7,5 +7,5 @@ D_SCPBase.Config.General = {
     end,
     ["scp_setplayer"] = true, -- Whether or not to enable the scp_setplayer command
     ["scp_removeplayer"] = true, -- Whether or not to enable the scp_removeplayer command
-    ["Debug"] = false, -- Whether or not to send debug messages to the console
+    ["Debug"] = true, -- Whether or not to send debug messages to the console
 }

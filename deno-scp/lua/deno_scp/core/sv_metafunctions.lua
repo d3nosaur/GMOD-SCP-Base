@@ -36,6 +36,9 @@ function plyMeta:RemoveSCP()
     if !self:IsValid() then return end
     if !D_SCPBase.ActiveSCPs[self] then return false end
 
+    local onRemoved = GetSCPTable(D_SCPBase.ActiveSCPs[self]).Hooks.OnRemoved
+    if isfunction(onRemoved) then onRemoved(self) end
+
     D_SCPBase.ActiveSCPs[self] = nil
 
     self:SetNWBool("SCP", false)

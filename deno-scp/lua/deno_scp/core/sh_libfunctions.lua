@@ -124,3 +124,10 @@ function player.FindPlayer(name)
 
     return target or false
 end
+
+--- Gets the SCP table for a given SCP
+-- @param SCPID The type of SCP
+-- @return Table, the SCP table
+function GetSCPTable(SCPID)
+    return D_SCPBase.SCPs[SCPID]
+end

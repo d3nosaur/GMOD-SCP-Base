@@ -1,12 +1,25 @@
 D_SCPBase = D_SCPBase or {}
 local config = D_SCPBase.Config.SCP_173
 
+local attackSounds = {
+    "scp_173/bone_break_1.wav",
+    "scp_173/bone_break_2.wav",
+    "scp_173/bone_break_3.wav",
+}
+
+local moveSounds = {
+    "scp_173/concrete_movement_1.wav",
+    "scp_173/concrete_movement_2.wav",
+    "scp_173/concrete_movement_3.wav",
+}
+
 if SERVER then
     util.AddNetworkString("D_SCP173_AddWatcher")
     util.AddNetworkString("D_SCP173_RemoveWatcher")
     util.AddNetworkString("D_SCP173_ManualBlink")
     util.AddNetworkString("D_SCP173_BlinkHUD")
     util.AddNetworkString("D_SCP173_RandomizeSequence")
+    util.AddNetworkString("D_SCP173_RemoveWatcherTimers")
 
     -- Table of SCPs and their watchers <SCP, {Watchers}>
     local watchers = {}
@@ -20,7 +33,7 @@ if SERVER then
     net.Receive("D_SCP173_AddWatcher", function(len, watcher)
         local scp = net.ReadEntity()
 
-        if !IsValid(watcher) or !IsValid(scp) or scp:GetSCP() != "SCP_173" then return end
+        if !IsValid(watcher) or !IsValid(scp) or scp:GetSCP() != "SCP_173" or watcher:IsSCP() then return end
 
         watchers[scp] = watchers[scp] or {}
 
@@ -30,7 +43,7 @@ if SERVER then
     net.Receive("D_SCP173_RemoveWatcher", function(len, watcher)
         local scp = net.ReadEntity()
 
-        if !IsValid(watcher) or !IsValid(scp) or watcher:IsSCP() or scp:GetSCP() != "SCP_173" then return end
+        if !IsValid(watcher) or !IsValid(scp) or scp:GetSCP() != "SCP_173" then return end
 
         watchers[scp] = watchers[scp] or {}
 
@@ -71,6 +84,9 @@ if SERVER then
         d:SetDamageType(DMG_CRUSH)
         target:TakeDamageInfo(d)
 
+        sound.Play(moveSounds[math.random(1, #moveSounds)], ply:GetPos())
+        sound.Play(attackSounds[math.random(1, #attackSounds)], ply:GetPos())
+
         attackers[ply] = CurTime()
     end
 
@@ -91,10 +107,7 @@ if SERVER then
 
             -- Iterate over all players who have recently seen the SCP
             for i, ply in ipairs(watchers[scp]) do
-                if !IsValid(ply) or !ply:Alive() then 
-                    watchers[scp][i] = nil
-                    continue 
-                end
+                if !IsValid(ply) or !ply:Alive() or ply:IsFlagSet(FL_NOTARGET) then continue end
 
                 -- Initialize blinker array with player if it doesn't exist
                 lastBlink[ply] = lastBlink[ply] or CurTime()
@@ -105,7 +118,7 @@ if SERVER then
 
                     net.Start("D_SCP173_BlinkHUD")
                     net.WriteEntity(ply)
-                    net.Broadcast()
+                    net.Send(ply)
 
                     continue
                 end
@@ -129,9 +142,10 @@ if SERVER then
 
                 if config.ChangePoses then
                     // Randomize the player's pose on client and server
-                    local oldSequence = activeSequence[scp] or 0
+                    activeSequence[scp] = activeSequence[scp] or 0
+                    local oldSequence = activeSequence[scp]
                     while activeSequence[scp] == oldSequence do
-                        activeSequence[scp] = math.random(0, scp:GetSequenceCount())
+                        activeSequence[scp] = math.random(0, scp:GetSequenceCount()-1)
                     end
 
                     net.Start("D_SCP173_RandomizeSequence")
@@ -151,6 +165,11 @@ if SERVER then
         ["OnPrimaryAttack"] = function(ply)
             SCP173_Attack(ply)
         end,
+        ["OnRemoved"] = function(ply)
+            net.Start("D_SCP173_RemoveWatcherTimers")
+            net.WriteEntity(ply)
+            net.Broadcast()
+        end
     }
 
     D_SCPBase.RegisterSCP(scp)
@@ -160,26 +179,24 @@ if CLIENT then
     local CanBlink = false
     local LastBlink = 0
 
-    local watchingList = {}
-
     --- The backend code that tells the server it's time to start blinking
     local function AddWatcher(watcher, scp)
         if !IsValid(watcher) or !IsValid(scp) then return end
 
         CanBlink = true
 
-        if table.HasValue(watchingList, scp) && timer.Exists("D_SCP173_Watching_" .. scp:SteamID()) then
-            timer.Adjust("D_SCP173_Watching_" .. scp:SteamID(), 30, nil, nil)
+        -- We don't want to constantly be sending net messages saying that the player is watching the SCP
+        -- To prevent this, we only send the net message when the player first sees the SCP and again when they stop watching
+        if timer.Exists("D_SCP173_Watching_" .. scp:SteamID()) then
+            timer.Adjust("D_SCP173_Watching_" .. scp:SteamID(), 10, nil, nil)
             return
         end 
-
-        table.insert(watchingList, scp)
 
         net.Start("D_SCP173_AddWatcher")
         net.WriteEntity(scp)
         net.SendToServer()
 
-        timer.Create("D_SCP173_Watching_"  .. scp:SteamID(), 30, 1, function()
+        timer.Create("D_SCP173_Watching_"  .. scp:SteamID(), 10, 1, function()
             if !IsValid(scp) || !IsValid(LocalPlayer()) then return end
 
             canBlink = false
@@ -196,9 +213,9 @@ if CLIENT then
         local SCPList = player.GetSCPs("SCP_173")
 
         for k,v in ipairs(SCPList) do
-            if(LocalPlayer():CanSee(v)) then
-                AddWatcher(LocalPlayer(), v)
-            end
+            if LocalPlayer():IsSCP() or !LocalPlayer():CanSee(v) then continue end
+
+            AddWatcher(LocalPlayer(), v)
         end
     end)
 
@@ -249,5 +266,13 @@ if CLIENT then
         local seq = net.ReadInt(8)
 
         scp:SetSequence(seq)
+    end)
+
+    net.Receive("D_SCP173_RemoveWatcherTimers", function()
+        local scp = net.ReadEntity()
+
+        if timer.Exists("D_SCP173_Watching_" .. scp:SteamID()) then
+            timer.Remove("D_SCP173_Watching_" .. scp:SteamID())
+        end
     end)
 end
