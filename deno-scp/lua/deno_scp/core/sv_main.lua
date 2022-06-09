@@ -3,6 +3,8 @@ D_SCPBase = D_SCPBase or {}
 D_SCPBase.SCPs = D_SCPBase.SCPs or {}
 D_SCPBase.ActiveSCPs = D_SCPBase.ActiveSCPs or {}
 
+local config = D_SCPBase.Config.General
+
 --- Register an SCP to the system
 -- @param SCPTable the SCP's data
 function D_SCPBase.RegisterSCP(scpTable)
@@ -41,5 +43,5 @@ function D_SCPBase.SetSCP(ply, scp)
     ply:SetNWBool("SCP", true)
     ply:SetNWString("SCP_ID", scp)
 
-    print("[(D) SCP-Base Loader] " .. ply:Nick() .. " has been set to " .. scp .. ".")
+    if config.Debug then print("[(D) SCP-Base Loader] " .. ply:Nick() .. " has been set to " .. scp .. ".") end
 end

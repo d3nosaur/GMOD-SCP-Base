@@ -13,6 +13,8 @@ function plyMeta:CanSee(ent)
         (ent.GetShootPos != nil and ent:GetShootPos() or nil)
     }
 
+    if !IsValid(self) then return end
+
     local plyDirection = self:GetAimVector()
     for _, spot in pairs(checkSpots) do
         -- dot product vector math to check if ent is within players FOV.
@@ -110,6 +112,8 @@ end
 -- @return Player, the player if found | ERROR_MULTIPLE_FOUND if multiple players found | false if no players found
 ERROR_MULTIPLE_FOUND = true
 function player.FindPlayer(name)
+    name = string.lower(name)
+
     local target = false
     for _,ply in ipairs(player.GetAll()) do
         if !string.find(string.lower(ply:Nick()), name) then continue end

@@ -1,6 +1,7 @@
 D_SCPBase = D_SCPBase || {}
 D_SCPBase.ActiveSCPs = D_SCPBase.ActiveSCPs || {}
 
+local config = D_SCPBase.Config.General
 local plyMeta = FindMetaTable("Player")
 
 --- Get the SCP that the player is currently controlling
@@ -43,7 +44,7 @@ function plyMeta:RemoveSCP()
     self:Kill()
     self:Spawn()
 
-    print("[(D) SCP-Base Loader] " .. self:Nick() .. " is no longer an SCP.")
+    if config.Debug then print("[(D) SCP-Base Loader] " .. self:Nick() .. " is no longer an SCP.") end
 
     return true
 end

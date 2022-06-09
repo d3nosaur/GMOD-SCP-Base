@@ -1,4 +1,5 @@
 D_SCPBase = D_SCPBase or {}
+local config = D_SCPBase.Config.General
 
 -- Hashmap of events and the people who are listening to them
 local watchLog = {}
@@ -11,7 +12,8 @@ local hooks = {
 
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("EntityTakeDamage", "D_SCPBase_OnDamaged")
-                print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnDamaged")
+
+                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnDamaged") end
                 return 
             end
 
@@ -34,7 +36,8 @@ local hooks = {
 
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("PlayerDeath", "D_SCPBase_OnDeath")
-                print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnDeath")
+
+                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnDeath") end
                 return 
             end
 
@@ -57,7 +60,8 @@ local hooks = {
 
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("PlayerSpawn", "D_SCPBase_OnSpawn")
-                print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnSpawn")
+
+                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnSpawn") end
                 return 
             end
 
@@ -80,7 +84,8 @@ local hooks = {
 
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("Think", "D_SCPBase_OnTick")
-                print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnTick")
+
+                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnTick") end
                 return 
             end
 
@@ -104,7 +109,8 @@ local hooks = {
 
                 if not istable(listeners) or table.IsEmpty(listeners) then 
                     timer.Remove("D_SCPBase_Timer5s")
-                    print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer5s")
+
+                    if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer5s") end
                     return 
                 end
     
@@ -129,7 +135,8 @@ local hooks = {
 
                 if not istable(listeners) or table.IsEmpty(listeners) then 
                     timer.Remove("D_SCPBase_Timer1s")
-                    print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer1s")
+
+                   if config.Debug then  print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer1s") end
                     return 
                 end
     
@@ -154,7 +161,8 @@ local hooks = {
 
                 if not istable(listeners) or table.IsEmpty(listeners) then 
                     timer.Remove("D_SCPBase_Timer1/4s")
-                    print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer1/4s")
+
+                    if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer1/4s") end
                     return 
                 end
     
@@ -178,7 +186,8 @@ local hooks = {
 
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("KeyPress", "D_SCPBase_OnPrimaryAttack")
-                print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnPrimaryAttack")
+
+                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnPrimaryAttack") end
                 return 
             end
 
@@ -190,7 +199,33 @@ local hooks = {
                     return
                 end
 
-                hookData.Function(ply, inflictor, attacker)
+                hookData.Function(ply, key)
+            end
+        end
+    },
+    ["CalcMainActivity"] = {
+        ["Hook"] = "CalcMainActivity",
+        ["Function"] = function(ply, velocity)
+            if !IsValid(ply) or !ply:Alive() then return end
+
+            local listeners = watchLog["CalcMainActivity"]
+
+            if not istable(listeners) or table.IsEmpty(listeners) then 
+                hook.Remove("KeyPress", "D_SCPBase_CalcMainActivity")
+
+                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_CalcMainActivity") end
+                return 
+            end
+
+            if listeners[ply] then
+                local hookData = listeners[ply]
+
+                if(hookData.SCPID != ply:GetSCP()) then
+                    listeners[ply] = nil
+                    return
+                end
+
+                hookData.Function(ply, velocity)
             end
         end
     }
