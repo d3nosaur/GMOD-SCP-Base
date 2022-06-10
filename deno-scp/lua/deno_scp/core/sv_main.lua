@@ -11,15 +11,16 @@ function D_SCPBase.RegisterSCP(scpTable)
     scpTable.Health = scpTable.Health or 100
     scpTable.Armor = scpTable.Armor or 0
     scpTable.Model = scpTable.Model or nil
-    scpTable.Useable = scpTable.Useable or true
-    scpTable.Respawn = scpTable.Respawn or true
-    scpTable.KeepWeapons = scpTable.KeepWeapons or false
-    scpTable.AllowWeapons = scpTable.AllowWeapons or false
+    scpTable.Useable = scpTable.Useable != nil and scpTable.Useable or true
+    scpTable.RemoveOnDeath = scpTable.RemoveOnDeath != nil and scpTable.RemoveOnDeath or true
+    scpTable.Respawn = scpTable.Respawn != nil and scpTable.Respawn or true
+    scpTable.KeepWeapons = scpTable.KeepWeapons != nil and scpTable.KeepWeapons or false
+    scpTable.AllowWeapons = scpTable.AllowWeapons != nil and scpTable.AllowWeapons or false
     scpTable.Weapons = scpTable.Weapons or {}
     scpTable.RunSpeed = scpTable.RunSpeed or 240
     scpTable.WalkSpeed = scpTable.WalkSpeed or 160
-    scpTable.CanSpeak = scpTable.CanSpeak or false
-    scpTable.CanListen = scpTable.CanListen or true
+    scpTable.CanSpeak = scpTable.CanSpeak != nil and scpTable.CanSpeak or false
+    scpTable.CanListen = scpTable.CanListen != nil and scpTable.CanListen or false
 
     scpTable.Hooks = scpTable.Hooks or {}
 
@@ -35,10 +36,14 @@ function D_SCPBase.SetSCP(ply, scp)
 
     local scpTable = D_SCPBase.SCPs[scp]
 
-    D_SCPBase.SetupPlayerSCP(ply, scpTable, true)
-    D_SCPBase.RegisterSCPHooks(ply, scpTable)
-
     D_SCPBase.ActiveSCPs[ply] = scp
+
+    if scpTable.Respawn then
+        ply:Spawn()
+    end
+
+    D_SCPBase.SetupPlayerSCP(ply, scpTable)
+    D_SCPBase.RegisterSCPHooks(ply, scpTable)
 
     ply:SetNWBool("SCP", true)
     ply:SetNWString("SCP_ID", scp)

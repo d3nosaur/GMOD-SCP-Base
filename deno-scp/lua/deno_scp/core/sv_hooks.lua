@@ -240,6 +240,8 @@ function D_SCPBase.RegisterSCPHooks(ply, scpTable)
     local scpHooks = scpTable.Hooks
 
     for hookName, hookFunction in pairs(scpHooks) do
+        if !istable(hooks[hookName]) then continue end
+
         watchLog[hookName] = watchLog[hookName] or {}
 
         watchLog[hookName][ply] = {

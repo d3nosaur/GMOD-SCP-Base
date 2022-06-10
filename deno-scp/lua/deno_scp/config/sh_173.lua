@@ -9,7 +9,8 @@ D_SCPBase.Config.SCP_173 = {
     ["BlinkLength"] = 0.3, -- The time that the player will blink for (Effects both client side view and the SCP on server)
 
     ["AnimatedBlink"] = true, -- Whether or not to animate the blink (Only client side)
-    ["ChangePoses"] = true, -- Whether or not to change the SCP's pose when looking away
+    ["ChangePoses"] = true, -- Whether or not to change the SCP's pose when looking away (Only works with Pandemic model)
+    ["Model"] = "Peanut", -- Which model to use ("Peanut", or "Pandemic"). Peanut is the one from SCP Containment Breach, Pandemic is the one from SCP Pandemic
 
     ["AttackDelay"] = 3, -- Delay between attacks
     ["AttackRange"] = 256, -- Range of the attack

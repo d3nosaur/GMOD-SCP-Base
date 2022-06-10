@@ -30,6 +30,8 @@ if SERVER then
     scp.CanSpeak = false
     -- Whether or not the player can hear other players (Only voice chat) (Default: true)
     scp.CanListen = true
+    -- Whether or not to remove the player from the SCP when they die
+    scp.RemoveOnDeath = true
 
     -- Serverside only hooks, client side defined manually below
     scp.Hooks = {

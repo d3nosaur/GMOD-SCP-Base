@@ -95,10 +95,11 @@ if SERVER then
     scp.ID = "SCP_173"
     scp.Health = config.Health
     scp.Armor = config.Armor
-    scp.Model = "models/scp_pandemic/deno_ports/scp_173/scp_173.mdl"
+    scp.Model = config.Model == "Peanut" and "models/scp173_new/scp173_new.mdl" or "models/scp_pandemic/deno_ports/scp_173/scp_173.mdl"
     scp.RunSpeed = config.RunSpeed
     scp.WalkSpeed = config.WalkSpeed
-    scp.Respawn = false
+    scp.RemoveOnDeath = true
+    scp.Respawn = true
     scp.CanSpeak = config.CanSpeak
 
     scp.Hooks = {
@@ -140,7 +141,7 @@ if SERVER then
             if scp:IsFlagSet(FL_FROZEN) then
                 scp:Freeze(false)
 
-                if config.ChangePoses then
+                if config.ChangePoses and config.Model == "Pandemic" then
                     // Randomize the player's pose on client and server
                     activeSequence[scp] = activeSequence[scp] or 0
                     local oldSequence = activeSequence[scp]

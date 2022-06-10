@@ -3,12 +3,7 @@ D_SCPBase = D_SCPBase or {}
 --- Sets up the player's stats to the SCPs
 -- @param Player the player to set
 -- @param SCPTable the SCP's data
-function D_SCPBase.SetupPlayerSCP(ply, scpTable, respawn)
-    if respawn and scpTable.Respawn then
-        ply:Kill()
-        ply:Spawn()
-    end
-
+function D_SCPBase.SetupPlayerSCP(ply, scpTable)
     ply:SetHealth(scpTable.Health)
     ply:SetMaxHealth(scpTable.Health)
     ply:SetArmor(scpTable.Armor)
@@ -34,7 +29,10 @@ hook.Add("PlayerSpawn", "D_SCPBase_SetupPlayerSCP", function(ply)
     if !ply:IsSCP() then return end
 
     local scpTable = D_SCPBase.SCPs[ply:GetSCP()]
-    D_SCPBase.SetupPlayerSCP(ply, scpTable, false)
+
+    timer.Simple(0, function()
+        D_SCPBase.SetupPlayerSCP(ply, scpTable)
+    end)
 end)
 
 hook.Add("PlayerSwitchWeapon", "D_SCPBase_PreventWeapons", function(ply)
@@ -54,5 +52,15 @@ hook.Add("PlayerCanHearPlayersVoice", "D_SCPBase_DisableVoice", function(listene
     if speaker:IsSCP() then
         local speakerTable = D_SCPBase.SCPs[speaker:GetSCP()]
         if !speakerTable.CanSpeak then return false end
+    end
+end)
+
+hook.Add("PlayerDeath", "D_SCPBase_RemoveOnDeath", function(ply)
+    if !ply:IsSCP() then return end
+
+    local scpTable = GetSCPTable(ply:GetSCP())
+
+    if scpTable.RemoveOnDeath then
+        ply:RemoveSCP()
     end
 end)
