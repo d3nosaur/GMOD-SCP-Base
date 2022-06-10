@@ -10,7 +10,7 @@ D_SCPBase.Config.SCP_173 = {
 
     ["AnimatedBlink"] = true, -- Whether or not to animate the blink (Only client side)
     ["ChangePoses"] = true, -- Whether or not to change the SCP's pose when looking away (Only works with Pandemic model)
-    ["Model"] = "Peanut", -- Which model to use ("Peanut", or "Pandemic"). Peanut is the one from SCP Containment Breach, Pandemic is the one from SCP Pandemic
+    ["Model"] = "Pandemic", -- Which model to use ("Peanut", or "Pandemic"). Peanut is the one from SCP Containment Breach, Pandemic is the one from SCP Pandemic
 
     ["AttackDelay"] = 3, -- Delay between attacks
     ["AttackRange"] = 256, -- Range of the attack
@@ -21,5 +21,6 @@ D_SCPBase.Config.SCP_173 = {
     ["RunSpeed"] = 600, -- Run speed of the SCP (DarkRP Default = 240)
     ["WalkSpeed"] = 400, -- Walk speed of the SCP (DarkRP Default = 160)
 
-    ["CanSpeak"] = false -- Whether or not the SCP can speak
+    ["CanSpeak"] = false, -- Whether or not the SCP can speak
+    ["RemoveOnDeath"] = true, -- Whether or not to remove the player from SCP-173 when they die
 }

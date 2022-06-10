@@ -52,21 +52,20 @@ if SERVER then
 
     local lastManualBlink = {}
     net.Receive("D_SCP173_ManualBlink", function(len, ply)
-        if !config.ManualBlinking or !IsValid(ply) or table.IsEmpty(watchers) or !ply:Alive() then return end
+        if !config.ManualBlinking or !IsValid(ply) or !ply:Alive() then return end
 
         lastManualBlink[ply] = lastManualBlink[ply] or 0
         
-        if !(lastManualBlink[ply] < CurTime() - config.ManualBlinkDelay) then return end
+        if !(lastManualBlink[ply] < CurTime() - config.ManualBlinkDelay) then print("no blink") return end
 
-        lastBlink[ply] = CurTime()
+        lastBlink[ply] = 0
         lastManualBlink[ply] = CurTime()
     end)
 
     local function SCP173_Attack(ply)
         -- The player is frozen when someone is looking at them
         if ply:IsFlagSet(FL_FROZEN) then return end
-
-        -- Hacky way to create attack delays
+        
         attackers[ply] = attackers[ply] or 0
         if !(attackers[ply] < CurTime() - config.AttackDelay) then return end
 
@@ -98,7 +97,7 @@ if SERVER then
     scp.Model = config.Model == "Peanut" and "models/scp173_new/scp173_new.mdl" or "models/scp_pandemic/deno_ports/scp_173/scp_173.mdl"
     scp.RunSpeed = config.RunSpeed
     scp.WalkSpeed = config.WalkSpeed
-    scp.RemoveOnDeath = true
+    scp.RemoveOnDeath = config.RemoveOnDeath
     scp.Respawn = true
     scp.CanSpeak = config.CanSpeak
 
@@ -142,7 +141,7 @@ if SERVER then
                 scp:Freeze(false)
 
                 if config.ChangePoses and config.Model == "Pandemic" then
-                    // Randomize the player's pose on client and server
+                    -- Randomize the player's pose on client and server
                     activeSequence[scp] = activeSequence[scp] or 0
                     local oldSequence = activeSequence[scp]
                     while activeSequence[scp] == oldSequence do
