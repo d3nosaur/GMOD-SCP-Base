@@ -52,7 +52,7 @@ D_SCPBase.Config.SCP_173 = {
 
     ["Model"] = {
         ["Type"] = "Multiple",
-        ["Value"] = "Pandemic",
+        ["Value"] = "models/scp_pandemic/deno_ports/scp_173/scp_173.mdl",
         ["Options"] = {
             ["Peanut"] = "models/scp173_new/scp173_new.mdl",
             ["Pandemic"] = "models/scp_pandemic/deno_ports/scp_173/scp_173.mdl",
