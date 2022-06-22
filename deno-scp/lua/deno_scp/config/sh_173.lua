@@ -2,25 +2,129 @@ D_SCPBase = D_SCPBase or {}
 D_SCPBase.Config = D_SCPBase.Config or {}
 
 D_SCPBase.Config.SCP_173 = {
-    ["ManualBlinkDelay"] = 0.5, -- Delay between each time the player can manually blink
-    ["ForcedBlinkDelay"] = 5, -- Delay between each forced blink
-    ["ManualBlinkKey"] = KEY_N, -- Key to manually blink (https://wiki.facepunch.com/gmod/Enums/KEY)
-    ["ManualBlinking"] = true, -- Whether or not the player can manually blink
-    ["BlinkLength"] = 0.3, -- The time that the player will blink for (Effects both client side view and the SCP on server)
+    ["ManualBlinkDelay"] = {
+        ["Type"] = "Number",
+        ["Value"] = 0.5,
+        ["Min"] = 0.1,
+        ["Max"] = 300,
+        ["Description"] = "Delay between manual blinks (Seconds)"
+    },
+    
+    ["ForcedBlinkDelay"] = {
+        ["Type"] = "Number",
+        ["Value"] = 5,
+        ["Min"] = 1,
+        ["Max"] = 600,
+        ["Description"] = "Delay between each forced blink (Seconds)"
+    },
 
-    ["AnimatedBlink"] = true, -- Whether or not to animate the blink (Only client side)
-    ["ChangePoses"] = true, -- Whether or not to change the SCP's pose when looking away (Only works with Pandemic model)
-    ["Model"] = "Pandemic", -- Which model to use ("Peanut", or "Pandemic"). Peanut is the one from SCP Containment Breach, Pandemic is the one from SCP Pandemic
+    ["ManualBlinkKey"] = {
+        ["Type"] = "Key",
+        ["Value"] = KEY_N,
+        ["Description"] = "Key to manually blink"
+    },
 
-    ["AttackDelay"] = 3, -- Delay between attacks
-    ["AttackRange"] = 256, -- Range of the attack
-    ["AttackDamage"] = 1000, -- Damage of the attack
+    ["ManualBlinking"] = {
+        ["Type"] = "Boolean",
+        ["Value"] = true,
+        ["Description"] = "Allow the player to blink manually"
+    },
 
-    ["Health"] = 10000, -- Health of the SCP
-    ["Armor"] = 0, -- Armor of the SCP
-    ["RunSpeed"] = 600, -- Run speed of the SCP (DarkRP Default = 240)
-    ["WalkSpeed"] = 400, -- Walk speed of the SCP (DarkRP Default = 160)
+    ["BlinkLength"] = {
+        ["Type"] = "Number",
+        ["Value"] = 0.3,
+        ["Min"] = 0.01,
+        ["Max"] = 10,
+        ["Description"] = "Length of the blink (Seconds)"
+    },
 
-    ["CanSpeak"] = false, -- Whether or not the SCP can speak
-    ["RemoveOnDeath"] = true, -- Whether or not to remove the player from SCP-173 when they die
+    ["AnimatedBlink"] = {
+        ["Type"] = "Boolean",
+        ["Value"] = true,
+        ["Description"] = "Animated visual blinking"
+    },
+
+    ["ChangePoses"] = {
+        ["Type"] = "Boolean",
+        ["Value"] = true,
+        ["Description"] = "Change pose when unfrozen"
+    },
+
+    ["Model"] = {
+        ["Type"] = "Multiple",
+        ["Value"] = "Pandemic",
+        ["Options"] = {
+            ["Peanut"] = "models/scp173_new/scp173_new.mdl",
+            ["Pandemic"] = "models/scp_pandemic/deno_ports/scp_173/scp_173.mdl",
+        },
+        ["Description"] = "SCP-173 Model"
+    },
+
+    ["AttackDelay"] = {
+        ["Type"] = "Number",
+        ["Value"] = 3,
+        ["Min"] = 0.1,
+        ["Max"] = 600,
+        ["Description"] = "Delay between each attack (Seconds)"
+    },
+
+    ["AttackRange"] = {
+        ["Type"] = "Number",
+        ["Value"] = 256,
+        ["Min"] = 1,
+        ["Max"] = 2048,
+        ["Description"] = "Range of SCP-173's attack (Source Units)"
+    },
+
+    ["AttackDamage"] = {
+        ["Type"] = "Number",
+        ["Value"] = 1000,
+        ["Min"] = 1,
+        ["Max"] = 2147483647,
+        ["Description"] = "Damage of SCP-173's attack"
+    },
+
+    ["Health"] = {
+        ["Type"] = "Number",
+        ["Value"] = 10000,
+        ["Min"] = 1,
+        ["Max"] = 2147483647,
+        ["Description"] = "Health of SCP-173"
+    },
+
+    ["Armor"] = {
+        ["Type"] = "Number",
+        ["Value"] = 0,
+        ["Min"] = 0,
+        ["Max"] = 2147483647,
+        ["Description"] = "Armor of SCP-173"
+    },
+
+    ["RunSpeed"] = {
+        ["Type"] = "Number",
+        ["Value"] = 600,
+        ["Min"] = 1,
+        ["Max"] = 5000,
+        ["Description"] = "Speed of SCP-173's run"
+    },
+
+    ["WalkSpeed"] = {
+        ["Type"] = "Number",
+        ["Value"] = 400,
+        ["Min"] = 1,
+        ["Max"] = 5000,
+        ["Description"] = "Speed of SCP-173's walk"
+    },
+
+    ["CanSpeak"] = {
+        ["Type"] = "Boolean",
+        ["Value"] = true,
+        ["Description"] = "Allow SCP-173 to speak"
+    },
+
+    ["RemoveOnDeath"] = {
+        ["Type"] = "Boolean",
+        ["Value"] = true,
+        ["Description"] = "Remove player from SCP-173 when they die"
+    },
 }

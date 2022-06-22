@@ -13,7 +13,7 @@ local hooks = {
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("EntityTakeDamage", "D_SCPBase_OnDamaged")
 
-                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnDamaged") end
+                if config.Debug.Value then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnDamaged") end
                 return 
             end
 
@@ -37,7 +37,7 @@ local hooks = {
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("PlayerDeath", "D_SCPBase_OnDeath")
 
-                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnDeath") end
+                if config.Debug.Value then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnDeath") end
                 return 
             end
 
@@ -61,7 +61,7 @@ local hooks = {
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("PlayerSpawn", "D_SCPBase_OnSpawn")
 
-                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnSpawn") end
+                if config.Debug.Value then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnSpawn") end
                 return 
             end
 
@@ -85,7 +85,7 @@ local hooks = {
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("Think", "D_SCPBase_OnTick")
 
-                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnTick") end
+                if config.Debug.Value then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnTick") end
                 return 
             end
 
@@ -110,7 +110,7 @@ local hooks = {
                 if not istable(listeners) or table.IsEmpty(listeners) then 
                     timer.Remove("D_SCPBase_Timer5s")
 
-                    if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer5s") end
+                    if config.Debug.Value then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer5s") end
                     return 
                 end
     
@@ -136,7 +136,7 @@ local hooks = {
                 if not istable(listeners) or table.IsEmpty(listeners) then 
                     timer.Remove("D_SCPBase_Timer1s")
 
-                   if config.Debug then  print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer1s") end
+                   if config.Debug.Value then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer1s") end
                     return 
                 end
     
@@ -162,7 +162,7 @@ local hooks = {
                 if not istable(listeners) or table.IsEmpty(listeners) then 
                     timer.Remove("D_SCPBase_Timer1/4s")
 
-                    if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer1/4s") end
+                    if config.Debug.Value then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_Timer1/4s") end
                     return 
                 end
     
@@ -187,7 +187,7 @@ local hooks = {
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("KeyPress", "D_SCPBase_OnPrimaryAttack")
 
-                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnPrimaryAttack") end
+                if config.Debug.Value then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_OnPrimaryAttack") end
                 return 
             end
 
@@ -213,7 +213,7 @@ local hooks = {
             if not istable(listeners) or table.IsEmpty(listeners) then 
                 hook.Remove("KeyPress", "D_SCPBase_CalcMainActivity")
 
-                if config.Debug then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_CalcMainActivity") end
+                if config.Debug.Value then print("[(D) SCP-Base Loader] Removed unused hook: D_SCPBase_CalcMainActivity") end
                 return 
             end
 

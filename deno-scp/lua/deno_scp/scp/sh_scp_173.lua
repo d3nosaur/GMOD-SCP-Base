@@ -52,11 +52,11 @@ if SERVER then
 
     local lastManualBlink = {}
     net.Receive("D_SCP173_ManualBlink", function(len, ply)
-        if !config.ManualBlinking or !IsValid(ply) or !ply:Alive() then return end
+        if !config.ManualBlinking.Value or !IsValid(ply) or !ply:Alive() then return end
 
         lastManualBlink[ply] = lastManualBlink[ply] or 0
         
-        if !(lastManualBlink[ply] < CurTime() - config.ManualBlinkDelay) then print("no blink") return end
+        if !(lastManualBlink[ply] < CurTime() - config.ManualBlinkDelay.Value) then print("no blink") return end
 
         lastBlink[ply] = 0
         lastManualBlink[ply] = CurTime()
@@ -67,19 +67,19 @@ if SERVER then
         if ply:IsFlagSet(FL_FROZEN) then return end
         
         attackers[ply] = attackers[ply] or 0
-        if !(attackers[ply] < CurTime() - config.AttackDelay) then return end
+        if !(attackers[ply] < CurTime() - config.AttackDelay.Value) then return end
 
         -- If entity SCP is looking at is a player or an npc, attack them (TODO: Implement destroying props/doors here)
         local tr = ply:GetEyeTrace()
 
         local target = tr.Entity
-        if !IsValid(target) or !(target:IsPlayer() or target:IsNPC()) or tr.HitPos:DistToSqr(ply:EyePos()) > (config.AttackRange * config.AttackRange) or target:Health() <= 0 then return end
+        if !IsValid(target) or !(target:IsPlayer() or target:IsNPC()) or tr.HitPos:DistToSqr(ply:EyePos()) > (config.AttackRange.Value * config.AttackRange.Value) or target:Health() <= 0 then return end
 
         ply:SetPos(target:GetPos() - (target:GetPos() - ply:GetPos()):GetNormalized() * 40)
         
         local d = DamageInfo()
         d:SetAttacker(ply)
-        d:SetDamage(config.AttackDamage)
+        d:SetDamage(config.AttackDamage.Value)
         d:SetDamageType(DMG_CRUSH)
         target:TakeDamageInfo(d)
 
@@ -92,14 +92,14 @@ if SERVER then
     local scp = {}
 
     scp.ID = "SCP_173"
-    scp.Health = config.Health
-    scp.Armor = config.Armor
-    scp.Model = config.Model == "Peanut" and "models/scp173_new/scp173_new.mdl" or "models/scp_pandemic/deno_ports/scp_173/scp_173.mdl"
-    scp.RunSpeed = config.RunSpeed
-    scp.WalkSpeed = config.WalkSpeed
-    scp.RemoveOnDeath = config.RemoveOnDeath
+    scp.Health = config.Health.Value
+    scp.Armor = config.Armor.Value
+    scp.Model = config.Model.Value
+    scp.RunSpeed = config.RunSpeed.Value
+    scp.WalkSpeed = config.WalkSpeed.Value
+    scp.RemoveOnDeath = config.RemoveOnDeath.Value
     scp.Respawn = true
-    scp.CanSpeak = config.CanSpeak
+    scp.CanSpeak = config.CanSpeak.Value
 
     scp.Hooks = {
         ["OnTick"] = function(scp)
@@ -113,8 +113,8 @@ if SERVER then
                 lastBlink[ply] = lastBlink[ply] or CurTime()
 
                 -- If it's time for the player to blink, force them to blink
-                if lastBlink[ply] < CurTime() - config.ForcedBlinkDelay then
-                    lastBlink[ply] = CurTime() + config.BlinkLength
+                if lastBlink[ply] < CurTime() - config.ForcedBlinkDelay.Value then
+                    lastBlink[ply] = CurTime() + config.BlinkLength.Value
 
                     net.Start("D_SCP173_BlinkHUD")
                     net.WriteEntity(ply)
@@ -140,7 +140,7 @@ if SERVER then
             if scp:IsFlagSet(FL_FROZEN) then
                 scp:Freeze(false)
 
-                if config.ChangePoses and config.Model == "Pandemic" then
+                if config.ChangePoses.Value and config.Model.Value == "Pandemic" then
                     -- Randomize the player's pose on client and server
                     activeSequence[scp] = activeSequence[scp] or 0
                     local oldSequence = activeSequence[scp]
@@ -219,12 +219,12 @@ if CLIENT then
         end
     end)
 
-    if config.ManualBlinking then
+    if config.ManualBlinking.Value then
         local nextBlink = 0
 
         hook.Add("Think", "D_SCP173_BlinkKeyInput", function()
-            if input.IsKeyDown( config.ManualBlinkKey ) and nextBlink < CurTime() and !gui.IsConsoleVisible() and !IsValid(vgui.GetKeyboardFocus()) then
-                nextBlink = CurTime() + config.ManualBlinkDelay
+            if input.IsKeyDown( config.ManualBlinkKey.Value ) and nextBlink < CurTime() and !gui.IsConsoleVisible() and !IsValid(vgui.GetKeyboardFocus()) then
+                nextBlink = CurTime() + config.ManualBlinkDelay.Value
 
                 net.Start("D_SCP173_ManualBlink")
                 net.SendToServer()
@@ -234,13 +234,13 @@ if CLIENT then
 
     --- The code to handle the client side HUD when blinking
     local function BlinkHUD()
-        if lastBlink < CurTime() - config.BlinkLength then
+        if lastBlink < CurTime() - config.BlinkLength.Value then
             hook.Remove("PreDrawHUD", "D_SCP173_BlinkHUD")
             return
         end
 
-        if config.AnimatedBlink then
-            local blinkVal = Lerp((CurTime() - lastBlink) / (config.BlinkLength * 0.2), 0, 1)
+        if config.AnimatedBlink.Value then
+            local blinkVal = Lerp((CurTime() - lastBlink) / (config.BlinkLength.Value * 0.2), 0, 1)
 
             cam.Start2D()
                 surface.SetDrawColor(0, 0, 0, 255 * blinkVal)

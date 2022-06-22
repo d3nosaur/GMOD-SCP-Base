@@ -6,11 +6,11 @@ local config = D_SCPBase.Config.General
 --- Set a player to an SCP
 -- @param ply The player to set.
 -- @param scp The scp to set the player to.
-if config.scp_setplayer then
+if config.scp_setplayer.Value then
     concommand.Add("scp_setplayer", function(ply, cmd, args)
         if not ply:IsValid() then return end
 
-        if isfunction(config.AdminCheck) and !config.AdminCheck(ply) then 
+        if !ply:IsAdmin() then 
             ply:PrintMessage(HUD_PRINTCONSOLE, "Only admins are allowed to use this command.")
             return 
         end
@@ -48,11 +48,11 @@ end
 
 --- Removes a player from their active SCP
 -- @param ply The player to remove.
-if config.scp_removeplayer then
+if config.scp_removeplayer.Value then
     concommand.Add("scp_removeplayer", function(ply, cmd, args)
         if not ply:IsValid() then return end
 
-        if isfunction(config.AdminCheck) and !config.AdminCheck(ply) then 
+        if !ply:IsAdmin() then 
             ply:PrintMessage(HUD_PRINTCONSOLE, "Only admins are allowed to use this command.")
             return 
         end
@@ -81,3 +81,14 @@ if config.scp_removeplayer then
         end
     end)
 end
+
+concommand.Add("scp_config", function(ply, cmd, args)
+    if not ply:IsValid() then return end
+
+    if !ply:IsAdmin() then 
+        ply:PrintMessage(HUD_PRINTCONSOLE, "Only admins are allowed to use this command.")
+        return 
+    end
+
+    D_SCPBase.OpenConfigMenu(ply)
+end)

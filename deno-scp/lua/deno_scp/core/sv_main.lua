@@ -48,5 +48,5 @@ function D_SCPBase.SetSCP(ply, scp)
     ply:SetNWBool("SCP", true)
     ply:SetNWString("SCP_ID", scp)
 
-    if config.Debug then print("[(D) SCP-Base Loader] " .. ply:Nick() .. " has been set to " .. scp .. ".") end
+    if config.Debug.Value then print("[(D) SCP-Base Loader] " .. ply:Nick() .. " has been set to " .. scp .. ".") end
 end

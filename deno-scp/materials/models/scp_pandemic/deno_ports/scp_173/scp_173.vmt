@@ -1,0 +1,17 @@
+VertexLitGeneric
+{
+	$basetexture "models/scp_pandemic/deno_ports/scp_173/scp_173"
+	$bumpmap "models/scp_pandemic/deno_ports/scp_173/scp_173_n"
+	$surfaceprop concrete
+
+	$envmap "env_cubemap"
+	$envmapmask "models/scp_pandemic/deno_ports/scp_173/scp_173_env"
+	$envmaptint "[0.08 0.08 0.08]"
+
+	$phong 1
+	$phongfresnelranges "[0.45 0.72 1]"
+	$phongtint "[0.47 0.47 0.47]"
+	$phongexponent 7
+	$phongboost 0.6
+	$phongalbedoboost 2.3
+}

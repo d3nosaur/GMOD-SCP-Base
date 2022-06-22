@@ -47,7 +47,7 @@ function plyMeta:RemoveSCP()
     self:Kill()
     self:Spawn()
 
-    if config.Debug then print("[(D) SCP-Base Loader] " .. self:Nick() .. " is no longer an SCP.") end
+    if config.Debug.Value then print("[(D) SCP-Base Loader] " .. self:Nick() .. " is no longer an SCP.") end
 
     return true
 end
