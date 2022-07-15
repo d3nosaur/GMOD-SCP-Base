@@ -119,14 +119,6 @@ D_SCPBase.OpenConfigMenu = function()
                     val = tonumber(val)
                     if val == nil then return end
 
-                    if val < tbl.Min then
-                        val = tbl.Min
-                    elseif val > tbl.Max then
-                        val = tbl.Max
-                    end
-
-                    entry:SetText(val)
-
                     D_SCPBase.Config[config][setting].Value = val
                 end, true)
             elseif tbl.Type == "Boolean" then
@@ -138,14 +130,14 @@ D_SCPBase.OpenConfigMenu = function()
                     D_SCPBase.Config[config][setting].Value = val
                 end)
             elseif tbl.Type == "Multiple" then
-                local combo = MSD.ComboBox(settingPanel, 12, 45, w2-24, h2-50, tbl.Description, table.KeyFromValue(tbl.Options, tbl.Value) or tbl.Value or "")
+                local combo = MSD.ComboBox(settingPanel, 12, 45, w2-24, h2-50, tbl.Description, tbl.Value)
                 
                 for k,v in pairs(tbl.Options) do
                     combo:AddChoice(k)
                 end
 
                 combo.OnSelect = function(self, index, value)
-                    D_SCPBase.Config[config][setting].Value = tbl.Options[value]
+                    D_SCPBase.Config[config][setting].Value = tbl.Options[val]
                 end
             end
 
