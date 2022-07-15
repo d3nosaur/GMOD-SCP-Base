@@ -33,7 +33,7 @@ local function DrawHighlightedEntities()
         render.SetStencilTestMask(1)
         render.SetStencilReferenceValue( 1 )
         render.SetStencilCompareFunction( STENCIL_EQUAL )
-        render.ClearBuffersObeyStencil( color.r, color.g, color.b, color.a, false )
+        render.ClearBuffersObeyStencil( color.r, color.g, color.b, color.a or 255, false )
         
         render.SetStencilEnable(false)
     end
