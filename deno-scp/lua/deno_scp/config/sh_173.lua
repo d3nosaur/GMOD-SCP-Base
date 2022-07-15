@@ -6,7 +6,7 @@ D_SCPBase.Config.SCP_173 = {
         ["Type"] = "Number",
         ["Value"] = 0.5,
         ["Min"] = 0.1,
-        ["Max"] = 300,
+        ["Max"] = 3,
         ["Description"] = "Delay between manual blinks (Seconds)"
     },
     
@@ -14,7 +14,7 @@ D_SCPBase.Config.SCP_173 = {
         ["Type"] = "Number",
         ["Value"] = 5,
         ["Min"] = 1,
-        ["Max"] = 600,
+        ["Max"] = 60,
         ["Description"] = "Delay between each forced blink (Seconds)"
     },
 
@@ -34,7 +34,7 @@ D_SCPBase.Config.SCP_173 = {
         ["Type"] = "Number",
         ["Value"] = 0.3,
         ["Min"] = 0.01,
-        ["Max"] = 10,
+        ["Max"] = 1,
         ["Description"] = "Length of the blink (Seconds)"
     },
 
@@ -52,7 +52,7 @@ D_SCPBase.Config.SCP_173 = {
 
     ["Model"] = {
         ["Type"] = "Multiple",
-        ["Value"] = "models/scp_pandemic/deno_ports/scp_173/scp_173.mdl",
+        ["Value"] = "Pandemic",
         ["Options"] = {
             ["Peanut"] = "models/scp173_new/scp173_new.mdl",
             ["Pandemic"] = "models/scp_pandemic/deno_ports/scp_173/scp_173.mdl",
@@ -64,7 +64,7 @@ D_SCPBase.Config.SCP_173 = {
         ["Type"] = "Number",
         ["Value"] = 3,
         ["Min"] = 0.1,
-        ["Max"] = 600,
+        ["Max"] = 10,
         ["Description"] = "Delay between each attack (Seconds)"
     },
 
@@ -80,7 +80,7 @@ D_SCPBase.Config.SCP_173 = {
         ["Type"] = "Number",
         ["Value"] = 1000,
         ["Min"] = 1,
-        ["Max"] = 2147483647,
+        ["Max"] = 100000,
         ["Description"] = "Damage of SCP-173's attack"
     },
 
@@ -88,7 +88,7 @@ D_SCPBase.Config.SCP_173 = {
         ["Type"] = "Number",
         ["Value"] = 10000,
         ["Min"] = 1,
-        ["Max"] = 2147483647,
+        ["Max"] = 100000,
         ["Description"] = "Health of SCP-173"
     },
 
@@ -96,7 +96,7 @@ D_SCPBase.Config.SCP_173 = {
         ["Type"] = "Number",
         ["Value"] = 0,
         ["Min"] = 0,
-        ["Max"] = 2147483647,
+        ["Max"] = 100000,
         ["Description"] = "Armor of SCP-173"
     },
 
