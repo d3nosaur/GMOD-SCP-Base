@@ -39,6 +39,6 @@ D_SCPBase.AutorunDirectory = function(directory)
 	end
 end
 
-D_SCPBase.AutorunDirectory("deno_Scp/config")
-D_SCPBase.AutorunDirectory("deno_Scp/core")
-D_SCPBase.AutorunDirectory("deno_Scp/scp")
+D_SCPBase.AutorunDirectory("deno_scp/config")
+D_SCPBase.AutorunDirectory("deno_scp/core")
+D_SCPBase.AutorunDirectory("deno_scp/scp")
